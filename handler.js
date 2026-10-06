@@ -1,4 +1,3 @@
-
 import fs from 'fs';
 import path, { join } from 'path';
 import { fileURLToPath } from 'url';
