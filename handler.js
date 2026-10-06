@@ -477,4 +477,46 @@ export async function handler(chatUpdate) {
     if (opts['autoread']) await this.readMessages([m.key]);
 
     if (db.data.chats[m.chat].reaction && m.text.match(/(ción|dad|aje|oso|izar|mente|pero|tion|age|ous|ate|and|but|ify|ai|yuki|a|s)/gi)) {
-      let emot = pickRandom(["🍟", "😃", "😄", "😁", "😆", "🍓", "😅", "😂", "🤣", "🥲", "☺️", "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "🌺", "🌸", "😚", "😋", "😛", "😝", "😜", "🤪", "🤨", "🌟", "🤓", "😎", "🥸", "🤩", "🥳", "😏", "💫", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬", "🤯", "😳", 
+      let emot = pickRandom(["🍟", "😃", "😄", "😁", "😆", "🍓", "😅", "😂", "🤣", "🥲", "☺️", "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "🌺", "🌸", "😚", "😋", "😛", "😝", "😜", "🤪", "🤨", "🌟", "🤓", "😎", "🥸", "🤩", "🥳", "😏", "💫", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬", "🤯", "😳","🥵", "🥶", "😶‍🌫️", "😱", "😨", "😰", "😥", "😓", "🤗", "🤔", "🫣", "🤭", "🤖", "🍭", "🤫", "🫠", "🤥", "😶", "📇", "😐", "💧", "😑", "🫨", "😬", "🙄", "😯", "😦", "😧", "😮", "😲", "🥱", "😴", "🤤", "😪", "😮‍💨", "😵", "😵‍💫", "🤐", "🥴", "🤢", "🤮", "🤧", "😷", "🤒", "🤕", "🤑", "🤠", "😈", "👿", "👺", "🧿", "🌩", "👻", "😺", "😸", "😹", "😻", "😼", "😽", "🙀", "😿", "😾", "🫶", "👍", "✌️", "🙏", "🫵", "🤏", "🤌", "☝️", "🖕", "🙏", "🫵", "🫂", "🐱", "🤹‍♀️", "🤹‍♂️", "🗿", "✨", "⚡", "🔥", "🌈", "🩷", "❤️", "🧡", "💛", "💚", "🩵", "💙", "💜", "🖤", "🩶", "🤍", "🤎", "💔", "❤️‍🔥", "❤️‍🩹", "❣️", "💕", "💞", "💓", "💗", "💖", "💘", "💝", "🚩", "👊", "⚡️", "💋", "🫰", "💅", "👑", "🐣", "🐤", "🐈"]);
+      if (!m.fromMe) return this.sendMessage(m.chat, { react: { text: emot, key: m.key }});
+    }
+
+    function pickRandom(list) { return list[Math.floor(Math.random() * list.length)]; }
+  }
+}
+
+global.dfail = (type, m, conn, usedPrefix, command) => {
+    let edadaleatoria = ['10', '28', '20', '40', '18', '21', '15', '11', '9', '17', '25'].getRandom();
+    let user2 = m.pushName || 'Anónimo';
+    let verifyaleatorio = ['registrar', 'reg', 'verificar', 'verify', 'register'].getRandom();
+
+    const msg = {
+        rowner: '「🩵」Este comando solo puede ser usado por mi creador.\n\n> Félix Manuel',
+        owner: '「💎」Este comando solo puede ser usado por mi creador',
+        premium: '「🩵」 Este comando solo puede ser usado por los usuarios premiums.',
+        botprem: '「💥」Este comando solo está disponible para bots premium.',
+        private: '「💎」Este comando solo puede ser usado en chats privados.',
+        admin: '「🩵」Este comando solo puede ser usado por admins.',
+        botAdmin: '「💎」Para usar este comando, debo ser admin del grupo.',
+        unreg: '「🩵」¡Hey! no estas registrado, registrate para usar mis comandos\n\n/Reg nombre.edad\n\n! Ejemplo: _/Reg Félix.14_',
+        restrict: '「💎」Este comando fue desactivado por mi Creador\n\n> Félix Manuel.'
+    }[type];
+
+    if (msg)
+        return conn.reply(m.chat, msg, m, { contextInfo: fake }).then(() => conn.sendMessage(m.chat, { react: { text: '✖️', key: m.key } }));
+
+    let file = global.__filename(import.meta.url, true);
+    watchFile(file, async () => {
+        unwatchFile(file);
+        console.log(chalk.magenta("Se actualizo 'handler.js'"));
+        if (global.conns && global.conns.length > 0) {
+            const users = [...new Set([...global.conns
+                .filter(conn => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED)
+                .map(conn => conn)])];
+            for (const userr of users) {
+                userr.subreloadHandler(false);
+            }
+        }
+    });
+}
+ 
