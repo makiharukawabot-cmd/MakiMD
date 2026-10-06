@@ -26,11 +26,12 @@ import {makeWASocket, protoType, serialize} from './lib/simple.js'
 import {Low, JSONFile} from 'lowdb'
 import {mongoDB, mongoDBV2} from './lib/mongoDB.js'
 import store from './lib/store.js'
-const {proto} = (await import('@whiskeysockets/baileys')).default
+const {proto} = (await import('#baileys')).default
 import pkg from 'google-libphonenumber'
 const { PhoneNumberUtil } = pkg
 const phoneUtil = PhoneNumberUtil.getInstance()
-const {DisconnectReason, useMultiFileAuthState, MessageRetryMap, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, jidNormalizedUser} = await import('@whiskeysockets/baileys')
+const {DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, jidNormalizedUser} = await import('#baileys')
+import qrcodeTerminal from 'qrcode-terminal'
 import readline, { createInterface } from 'readline'
 import NodeCache from 'node-cache'
 const {CONNECTING} = ws
@@ -102,9 +103,9 @@ global.db.chain = chain(global.db.data)
 loadDatabase()
 
 const {state, saveState, saveCreds} = await useMultiFileAuthState(global.sessions)
-const msgRetryCounterMap = (MessageRetryMap) => { };
 const msgRetryCounterCache = new NodeCache()
-const {version} = await fetchLatestBaileysVersion();
+let version
+try { ({version} = await fetchLatestBaileysVersion()) } catch (e) { console.log(chalk.yellow('No se pudo consultar la version de WhatsApp Web, usando la de Baileys.')) }
 let phoneNumber = global.botNumber
 
 const methodCodeQR = process.argv.includes("qr")
@@ -134,24 +135,23 @@ console.debug = () => {}
 
 const connectionOptions = {
 logger: pino({ level: 'silent' }),
-printQRInTerminal: opcion == '1' ? true : methodCodeQR ? true : false,
-mobile: MethodMobile, 
-browser: opcion == '1' ? [`${nameqr}`, 'Edge', '20.0.04'] : methodCodeQR ? [`${nameqr}`, 'Edge', '20.0.04'] : ['Ubuntu', 'Edge', '110.0.1587.56'],
+browser: opcion == '1' || methodCodeQR ? [`${nameqr}`, 'Edge', '20.0.04'] : ['Ubuntu', 'Chrome', '120.0.0'],
 auth: {
 creds: state.creds,
 keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: "fatal" }).child({ level: "fatal" })),
 },
-markOnlineOnConnect: true, 
-generateHighQualityLinkPreview: true, 
+markOnlineOnConnect: true,
+generateHighQualityLinkPreview: true,
 getMessage: async (clave) => {
+try {
 let jid = jidNormalizedUser(clave.remoteJid)
 let msg = await store.loadMessage(jid, clave.id)
-return msg?.message || ""
+return msg?.message || undefined
+} catch { return undefined }
 },
 msgRetryCounterCache,
-msgRetryCounterMap,
 defaultQueryTimeoutMs: undefined,
-version,
+...(version ? { version } : {}),
 }
 
 global.conn = makeWASocket(connectionOptions);
@@ -201,9 +201,10 @@ await global.reloadHandler(true).catch(console.error);
 global.timestamp.connect = new Date;
 }
 if (global.db.data == null) loadDatabase();
-if (update.qr != 0 && update.qr != undefined || methodCodeQR) {
+if (update.qr) {
 if (opcion == '1' || methodCodeQR) {
-console.log(chalk.bold.yellow(`\n❐ ESCANEA EL CÓDIGO QR EXPIRA EN 45 SEGUNDOS`))}
+console.log(chalk.bold.yellow(`\n❐ ESCANEA EL CÓDIGO QR EXPIRA EN 45 SEGUNDOS`))
+qrcodeTerminal.generate(update.qr, { small: true })}
 }
 if (connection == 'open') {
 console.log(chalk.bold.green('\nConexión establecida con Makima'))
@@ -283,7 +284,7 @@ return true
 
 global.rutaJadiBot = join(__dirname, './blackJadiBot')
 
-if (global.blackJadibts) {
+if (global.makiJadibts || global.blackJadibts) {
 if (!existsSync(global.rutaJadiBot)) {
 mkdirSync(global.rutaJadiBot, { recursive: true }) 
 console.log(chalk.bold.cyan(`La carpeta: ${jadi} se creó correctamente.`))
