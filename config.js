@@ -25,7 +25,7 @@ global.owner = [
 //*─ׄ─ׅ─ׄ─✰─ׄ─ׅ─ׄ─✰─ׄ─ׅ─ׄ─✰─ׄ─ׅ─ׄ─✰─ׄ─ׅ─ׄ─✰─ׄ─ׅ─ׄ─*
 
 global.owner_lid = [
-  [' 243349189566583', '🩵 𝗖𝗿𝗲𝗮𝗱𝗼𝗿 🩵 (LID)', true],
+  ['243349189566583', '🩵 𝗖𝗿𝗲𝗮𝗱𝗼𝗿 🩵 (LID)', true],
   ['149963665342644', 'Número 2 (LID)', true]
 ]
 
@@ -38,8 +38,8 @@ global.prems = []
 //*─ׄ─ׅ─ׄ─✰─ׄ─ׅ─ׄ─✰─ׄ─ׅ─ׄ─✰─ׄ─ׅ─ׄ─✰─ׄ─ׅ─ׄ─✰─ׄ─ׅ─ׄ─*
 
 global.libreria = 'Baileys'
-global.baileys = 'V 6.7.8'
-global.vs = '2.0.0'
+global.baileys = 'V 7.x'
+global.vs = '2.1.0'
 global.languaje = 'Español'
 global.nameqr = 'Makima Bot'
 global.sessions = 'Session'
